@@ -32,6 +32,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    implementation 'com.tbuonomo:dotsindicator:4.2'
+
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'org.postgresql:postgresql:42.2.5.jre7'
     testImplementation 'junit:junit:4.+'

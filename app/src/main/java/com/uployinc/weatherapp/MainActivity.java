@@ -2,13 +2,20 @@ package com.uployinc.weatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+import com.uployinc.weatherapp.adapters.HoursWeatherRecyclerViewAdapter;
 import com.uployinc.weatherapp.fragments.FragmentLocation;
 import com.uployinc.weatherapp.fragments.FragmentLocationDetails;
+import com.uployinc.weatherapp.fragments.FragmentLocations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         List<Fragment> fragmentList = new ArrayList<>();
+        fragmentList.add(new FragmentLocations());
         fragmentList.add(new FragmentLocation());
         fragmentList.add(new FragmentLocationDetails());
 
@@ -31,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), fragmentList);
 
         viewPager.setAdapter(pagerAdapter);
+        viewPager.setCurrentItem(1);
+
+        DotsIndicator dotsIndicator = (DotsIndicator) findViewById(R.id.dots_indicator);
+        dotsIndicator.setViewPager(viewPager);
     }
 
 }
