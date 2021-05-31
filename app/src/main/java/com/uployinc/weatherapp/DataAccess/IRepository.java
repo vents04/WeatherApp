@@ -1,5 +1,7 @@
 package com.uployinc.weatherapp.DataAccess;
 
+import com.uployinc.weatherapp.Common.IIndexable;
+
 import java.util.List;
 import java.util.function.Predicate;
 
