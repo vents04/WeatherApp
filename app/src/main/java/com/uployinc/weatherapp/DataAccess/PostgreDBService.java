@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class PostgreDBService implements IDBService{
+    private static PostgreDBService _instance;
     private Connection connection;
     private final String hostAddress = "84.40.90.18";
     private final String databaseName = "weather_api";
@@ -16,6 +17,15 @@ public class PostgreDBService implements IDBService{
     private final String pass = "admin";
     @SuppressLint("DefaultLocale")
     private final String url = String.format("jdbc:postgresql://%s:%d/%s", this.hostAddress, this.portNumber, this.databaseName);
+
+    private PostgreDBService(){
+        connection = getConnection();
+    }
+
+    public PostgreDBService GetInstance(){
+        if(_instance == null) _instance = new PostgreDBService();
+        return _instance;
+    }
 
     public Connection getConnection() {
         if (connection == null) {
