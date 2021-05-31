@@ -2,12 +2,17 @@ package com.uployinc.weatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+import com.uployinc.weatherapp.adapters.HoursWeatherRecyclerViewAdapter;
 import com.uployinc.weatherapp.fragments.FragmentLocation;
 import com.uployinc.weatherapp.fragments.FragmentLocationDetails;
 import com.uployinc.weatherapp.fragments.FragmentLocations;
