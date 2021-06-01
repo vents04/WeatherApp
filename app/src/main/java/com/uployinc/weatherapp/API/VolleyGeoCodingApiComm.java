@@ -10,13 +10,13 @@ public class VolleyGeoCodingApiComm extends VolleyApiComm implements IGeoCodingA
     private static VolleyGeoCodingApiComm instance;
     private final String somethingRoute = "/something/route";
 
-    private VolleyGeoCodingApiComm(Context context, String apiUrl) {
-        super(context, apiUrl);
+    private VolleyGeoCodingApiComm(Context context, String apiUrl, String apiKey) {
+        super(context, apiUrl, apiKey);
     }
 
-    public static synchronized VolleyGeoCodingApiComm GetInstance(Context context, String apiUrl){
+    public static synchronized VolleyGeoCodingApiComm GetInstance(Context context, String apiUrl, String apiKey){
         if(instance == null){
-            instance = new VolleyGeoCodingApiComm(context, apiUrl);
+            instance = new VolleyGeoCodingApiComm(context, apiUrl, apiKey);
         }
         return instance;
     }

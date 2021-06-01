@@ -12,10 +12,12 @@ public class VolleyApiComm extends AppCompatActivity {
     protected Context context;
     protected RequestQueue requestQueue;
     protected String apiUrl;
+    protected String apiKey;
 
-    protected VolleyApiComm(Context context, String apiUrl) {
+    protected VolleyApiComm(Context context, String apiUrl, String apiKey) {
         this.context = context;
         this.apiUrl = apiUrl;
+        this.apiKey = apiKey;
         requestQueue = getRequestQueue();
     }
 
