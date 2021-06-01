@@ -12,8 +12,10 @@ import com.uployinc.weatherapp.API.VolleyWeatherApiComm;
 public class App extends Application {
 
     private static Application sApplication;
-    private static final String weatherApiUrl = "https://api.rateus.uploy.app";
+    private static final String weatherApiUrl = "https://api.openweathermap.org/data/2.5";
+    private static final String weatherApiKey = ""; //TODO: take the key from a config file
     private static final String geoCodingApiUrl = "https://api.rateus.uploy.app";
+    private static final String geoCodingApiKey = "";
     @SuppressLint("StaticFieldLeak")
     private static IWeatherApiComm weatherApiComm;
     private static IGeoCodingApiComm geoCodingApiComm;
@@ -33,7 +35,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sApplication = this;
-        weatherApiComm = VolleyWeatherApiComm.GetInstance(getContext(), weatherApiUrl);
-        geoCodingApiComm = VolleyGeoCodingApiComm.GetInstance(getContext(), geoCodingApiUrl);
+        weatherApiComm = VolleyWeatherApiComm.GetInstance(getContext(), weatherApiUrl, weatherApiKey);
+        geoCodingApiComm = VolleyGeoCodingApiComm.GetInstance(getContext(), geoCodingApiUrl, geoCodingApiKey);
     }
 }
