@@ -1,15 +1,10 @@
 package com.uployinc.weatherapp.fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,12 +23,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.uployinc.weatherapp.MainActivity;
+import com.uployinc.weatherapp.App;
+import com.uployinc.weatherapp.Common.ICallback;
+import com.uployinc.weatherapp.Models.City;
+import com.uployinc.weatherapp.Models.DayForecast;
 import com.uployinc.weatherapp.R;
 import com.uployinc.weatherapp.adapters.HoursWeatherRecyclerViewAdapter;
 
@@ -45,7 +41,6 @@ import org.json.JSONObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class FragmentLocation extends Fragment {
 
@@ -55,7 +50,7 @@ public class FragmentLocation extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     double latitude, longitude;
 
-    private TextView locationTv, dateTv;
+    private TextView locationTv, dateTv, temperatureTv;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -66,6 +61,7 @@ public class FragmentLocation extends Fragment {
 
         locationTv = view.findViewById(R.id.location);
         dateTv = view.findViewById(R.id.date);
+        temperatureTv = view.findViewById(R.id.todayTemperature);
 
         initDate();
     }
@@ -91,6 +87,20 @@ public class FragmentLocation extends Fragment {
                                 JSONObject result = (JSONObject) results.get(results.length() - 3);
 
                                 locationTv.setText(result.get("formatted_address").toString());
+
+                                App.getWeatherApiComm().GetPresentDayForecast(new City(latitude, longitude, "Sofia"), new ICallback<DayForecast>() {
+                                    @Override
+                                    public void onResponse(DayForecast response) {
+                                        String tempStr = response.getTemperature()+" °C";
+                                        temperatureTv.setText(tempStr);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception exception) {
+                                        Log.e("error caught", exception.getMessage());
+                                    }
+                                });
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
