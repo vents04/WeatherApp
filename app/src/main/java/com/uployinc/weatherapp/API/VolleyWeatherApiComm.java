@@ -2,17 +2,24 @@ package com.uployinc.weatherapp.API;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Pair;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.uployinc.weatherapp.Common.ICallback;
+import com.uployinc.weatherapp.Models.DayForecast;
 import com.uployinc.weatherapp.Models.Forecast;
+import com.uployinc.weatherapp.Models.Location;
+import com.uployinc.weatherapp.Models.WeekForecast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import static com.android.volley.Request.Method.GET;
 import static com.android.volley.Request.Method.POST;
 
 public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiComm {
@@ -20,14 +27,18 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
     @SuppressLint("StaticFieldLeak")
     private static VolleyWeatherApiComm instance;
     private final String somethingRoute = "/something/route";
-
-    private VolleyWeatherApiComm(Context context, String apiUrl) {
-        super(context, apiUrl);
+    private String locationRoute(Location location) {
+        Pair<Double, Double> coordinates = location.getCoordinates();
+        return String.format(Locale.getDefault(),"/onecall?units=metric&lat=%f&lon=%f&appid=%s", coordinates.first, coordinates.second, apiKey);
     }
 
-    public static synchronized VolleyWeatherApiComm GetInstance(Context context, String apiUrl){
+    private VolleyWeatherApiComm(Context context, String apiUrl, String apiKey) {
+        super(context, apiUrl, apiKey);
+    }
+
+    public static synchronized VolleyWeatherApiComm GetInstance(Context context, String apiUrl, String apiKey){
         if(instance == null){
-            instance = new VolleyWeatherApiComm(context, apiUrl);
+            instance = new VolleyWeatherApiComm(context, apiUrl, apiKey);
         }
         return instance;
     }
@@ -49,5 +60,37 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
         } catch (JSONException e) {
             callback.onError(e);
         }
+    }
+
+    @Override
+    public void GetPresentDayForecast(Location location, ICallback<DayForecast> callback) {
+        addToRequestQueue(new JsonObjectRequest(GET, apiUrl + locationRoute(location), new JSONObject(), response -> {
+            DayForecast forecast = new DayForecast();
+            try {
+                response = response.getJSONObject("current");
+                forecast.setTargetTime(Instant.ofEpochSecond(response.getInt("dt")));
+                forecast.setTemperature(response.getDouble("temp"));
+                forecast.setFeelsLike(response.getDouble("feels_like"));
+                forecast.setPressure(response.getDouble("pressure"));
+                forecast.setRelativeHumidity(response.getDouble("humidity"));
+                forecast.setUVIndex(response.getInt("uvi"));
+                forecast.setCloudCover(response.getDouble("clouds"));
+                forecast.setWindSpeed(response.getDouble("wind_speed"));
+                forecast.setWindDirection(response.getDouble("wind_deg"));
+            } catch (JSONException e) {
+                callback.onError(e);
+            }
+            callback.onResponse(forecast);
+        }, callback::onError));
+    }
+
+    @Override
+    public void GetNextDayForecast(Location location, ICallback<DayForecast> callback) {
+
+    }
+
+    @Override
+    public void GetWeekForecast(Location location, ICallback<WeekForecast> callback) {
+
     }
 }
