@@ -1,4 +1,4 @@
-package com.uployinc.weatherapp.DataAccess;
+package com.uployinc.weatherapp.Common;
 
 public interface IIndexable<TKey> {
     TKey GetId();
