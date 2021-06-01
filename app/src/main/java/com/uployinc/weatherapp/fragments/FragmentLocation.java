@@ -24,12 +24,23 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.uployinc.weatherapp.MainActivity;
 import com.uployinc.weatherapp.R;
 import com.uployinc.weatherapp.adapters.HoursWeatherRecyclerViewAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,8 +51,9 @@ public class FragmentLocation extends Fragment {
     private ArrayList<Bitmap> images;
 
     private FusedLocationProviderClient fusedLocationClient;
-    final private int REQUEST_LOCATION = 1001;
     double latitude, longitude;
+
+    private TextView locationTv;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -49,6 +61,8 @@ public class FragmentLocation extends Fragment {
         initImagesList();
         getLocation();
         initHoursWeatherRecyclerView(view);
+
+        locationTv = view.findViewById(R.id.location);
     }
 
     @SuppressLint("MissingPermission")
@@ -60,8 +74,29 @@ public class FragmentLocation extends Fragment {
                 if (location != null) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
-                    Log.d("LAT", String.valueOf(latitude));
-                    Log.d("LNG", String.valueOf(longitude));
+                    Log.d("Lat", String.valueOf(latitude));
+                    Log.d("Lng", String.valueOf(longitude));
+
+                    RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=AIzaSyAWnEcYShIKTy-c5rNsxlX3BZg86nt49Xw", null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray results = response.getJSONArray("results");
+                                JSONObject result = (JSONObject) results.get(results.length() - 3);
+
+                                locationTv.setText(result.get("formatted_address").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+                    requestQueue.add(jsonObjectRequest);
                 }
             }
         });
@@ -72,7 +107,7 @@ public class FragmentLocation extends Fragment {
         Calendar rightNow = Calendar.getInstance();
         int currentHourIn24Format = rightNow.get(Calendar.HOUR_OF_DAY);
         for(int index = currentHourIn24Format; index <= currentHourIn24Format + 24; index++) {
-            hours.add((index%24 < 10) ? "0" + String.valueOf(index%24) + ":00" : String.valueOf(index%24) + ":00");
+            hours.add((index%24 < 10) ? "0" + index%24 + ":00" : index%24 + ":00");
         }
     }
 
