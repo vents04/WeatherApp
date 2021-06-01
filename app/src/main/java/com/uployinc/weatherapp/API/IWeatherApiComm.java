@@ -1,5 +1,5 @@
 package com.uployinc.weatherapp.API;
 
-public interface IApiComm {
+public interface IWeatherApiComm {
 
 }
