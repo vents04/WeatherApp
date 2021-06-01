@@ -42,8 +42,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class FragmentLocation extends Fragment {
 
@@ -53,7 +55,7 @@ public class FragmentLocation extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     double latitude, longitude;
 
-    private TextView locationTv;
+    private TextView locationTv, dateTv;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -63,6 +65,9 @@ public class FragmentLocation extends Fragment {
         initHoursWeatherRecyclerView(view);
 
         locationTv = view.findViewById(R.id.location);
+        dateTv = view.findViewById(R.id.date);
+
+        initDate();
     }
 
     @SuppressLint("MissingPermission")
@@ -100,6 +105,11 @@ public class FragmentLocation extends Fragment {
                 }
             }
         });
+    }
+
+    public void initDate() {
+        LocalDate today = LocalDate.now();
+        dateTv.setText(today.getDayOfMonth() + " " + today.getMonth() + " " + today.getYear());
     }
 
     public void initHoursList() {
