@@ -50,7 +50,7 @@ public class FragmentLocation extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     double latitude, longitude;
 
-    private TextView locationTv, dateTv, temperatureTv;
+    private TextView locationTv, dateTv, temperatureTv, humidityTv, precipitationChanceTv, windSpeedTv, weatherDescriptionTv;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -61,7 +61,11 @@ public class FragmentLocation extends Fragment {
 
         locationTv = view.findViewById(R.id.location);
         dateTv = view.findViewById(R.id.date);
-        temperatureTv = view.findViewById(R.id.todayTemperature);
+        temperatureTv = view.findViewById(R.id.currentTemperatureText);
+        windSpeedTv = view.findViewById(R.id.currentWindSpeedText);
+        humidityTv = view.findViewById(R.id.currentHumidityText);
+        precipitationChanceTv = view.findViewById(R.id.currentPrecipitationChanceText);
+        weatherDescriptionTv = view.findViewById(R.id.currentWeatherDescriptionText);
 
         initDate();
     }
@@ -72,7 +76,6 @@ public class FragmentLocation extends Fragment {
         fusedLocationClient.getLastLocation().addOnSuccessListener((Activity) getContext(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                Log.d("ui","ui");
                 if (location != null) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
@@ -89,11 +92,19 @@ public class FragmentLocation extends Fragment {
 
                                 locationTv.setText(result.get("formatted_address").toString());
 
-                                App.getWeatherApiComm().GetPresentDayForecast(new City(latitude, longitude, "Sofia"), new ICallback<DayForecast>() {
+                                App.getWeatherApiComm().GetCurrentForecast(new City(latitude, longitude, "Sofia"), new ICallback<DayForecast>() {
                                     @Override
                                     public void onResponse(DayForecast response) {
-                                        String tempStr = Math.round(response.getTemperature())+" °C";
-                                        temperatureTv.setText(tempStr);
+                                        String temperatureStr = Math.round(response.getTemperature())+" °C";
+                                        String humidityStr = Math.round(response.getRelativeHumidity())+"%";
+                                        String windSpeedStr = Math.round(response.getWindSpeed() * 3.6)+" km/h";
+                                        String precipitationChanceStr = Math.round(response.getProbabilityForPrecipitation())+"%";
+                                        String weatherDescriptionStr = response.getWeatherDescription();
+                                        temperatureTv.setText(temperatureStr);
+                                        humidityTv.setText(humidityStr);
+                                        precipitationChanceTv.setText(precipitationChanceStr);
+                                        windSpeedTv.setText(windSpeedStr);
+                                        weatherDescriptionTv.setText(weatherDescriptionStr);
                                     }
 
                                     @Override
@@ -125,9 +136,8 @@ public class FragmentLocation extends Fragment {
 
     public void initHoursList() {
         hours = new ArrayList<>();
-        Calendar rightNow = Calendar.getInstance();
-        int currentHourIn24Format = rightNow.get(Calendar.HOUR_OF_DAY);
-        for(int index = currentHourIn24Format; index < currentHourIn24Format + 24; index++) {
+        int currentHourIn24Format = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        for(int index = currentHourIn24Format; index <= currentHourIn24Format + 24; index++) {
             hours.add((index%24 < 10) ? "0" + index%24 + ":00" : index%24 + ":00");
         }
     }
