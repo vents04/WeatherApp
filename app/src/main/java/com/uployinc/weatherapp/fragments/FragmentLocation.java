@@ -72,6 +72,7 @@ public class FragmentLocation extends Fragment {
         fusedLocationClient.getLastLocation().addOnSuccessListener((Activity) getContext(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+                Log.d("ui","ui");
                 if (location != null) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
@@ -91,7 +92,7 @@ public class FragmentLocation extends Fragment {
                                 App.getWeatherApiComm().GetPresentDayForecast(new City(latitude, longitude, "Sofia"), new ICallback<DayForecast>() {
                                     @Override
                                     public void onResponse(DayForecast response) {
-                                        String tempStr = response.getTemperature()+" °C";
+                                        String tempStr = Math.round(response.getTemperature())+" °C";
                                         temperatureTv.setText(tempStr);
                                     }
 
@@ -126,7 +127,7 @@ public class FragmentLocation extends Fragment {
         hours = new ArrayList<>();
         Calendar rightNow = Calendar.getInstance();
         int currentHourIn24Format = rightNow.get(Calendar.HOUR_OF_DAY);
-        for(int index = currentHourIn24Format; index <= currentHourIn24Format + 24; index++) {
+        for(int index = currentHourIn24Format; index < currentHourIn24Format + 24; index++) {
             hours.add((index%24 < 10) ? "0" + index%24 + ":00" : index%24 + ":00");
         }
     }
