@@ -7,20 +7,19 @@ import android.util.Pair;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.uployinc.weatherapp.Common.ICallback;
 import com.uployinc.weatherapp.Models.DayForecast;
-import com.uployinc.weatherapp.Models.Forecast;
+import com.uployinc.weatherapp.Models.HourForecast;
+import com.uployinc.weatherapp.Models.HourlyForecast;
 import com.uployinc.weatherapp.Models.Location;
 import com.uployinc.weatherapp.Models.WeekForecast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import static com.android.volley.Request.Method.GET;
-import static com.android.volley.Request.Method.POST;
 
 public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiComm {
     //this isn't truly a leak (sources: https://developer.android.com/training/volley/requestqueue#singleton; https://stackoverflow.com/questions/40094020/warning-do-not-place-android-context-classes-in-static-fields-this-is-a-memor)
@@ -43,40 +42,24 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
         return instance;
     }
 
-    //TODO: implement the actual methods for interfacing with the api
-    public void updateQuestionnaire(Forecast forecast, String token, ICallback<JSONObject> callback) {
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("title", forecast.toString());
-
-            addToRequestQueue(new JsonObjectRequest(POST, apiUrl + somethingRoute, postData, callback::onResponse, callback::onError) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("x-auth-token", token);
-                    return headers;
-                }
-            });
-        } catch (JSONException e) {
-            callback.onError(e);
-        }
-    }
-
     @Override
-    public void GetPresentDayForecast(Location location, ICallback<DayForecast> callback) {
+    public void GetCurrentForecast(Location location, ICallback<DayForecast> callback) {
         addToRequestQueue(new JsonObjectRequest(GET, apiUrl + locationRoute(location), new JSONObject(), response -> {
             DayForecast forecast = new DayForecast();
             try {
-                response = response.getJSONObject("current");
-                forecast.setTargetTime(Instant.ofEpochSecond(response.getInt("dt")));
-                forecast.setTemperature(response.getDouble("temp"));
-                forecast.setFeelsLike(response.getDouble("feels_like"));
-                forecast.setPressure(response.getDouble("pressure"));
-                forecast.setRelativeHumidity(response.getDouble("humidity"));
-                forecast.setUVIndex(response.getInt("uvi"));
-                forecast.setCloudCover(response.getDouble("clouds"));
-                forecast.setWindSpeed(response.getDouble("wind_speed"));
-                forecast.setWindDirection(response.getDouble("wind_deg"));
+                JSONObject current = response.getJSONObject("current");
+                forecast.setTargetTime(Instant.ofEpochSecond(current.getInt("dt")));
+                forecast.setTemperature(current.getDouble("temp"));
+                forecast.setFeelsLike(current.getDouble("feels_like"));
+                forecast.setPressure(current.getDouble("pressure"));
+                forecast.setRelativeHumidity(current.getDouble("humidity"));
+                forecast.setUVIndex(current.getInt("uvi"));
+                forecast.setCloudCover(current.getDouble("clouds"));
+                forecast.setWindSpeed(current.getDouble("wind_speed"));
+                forecast.setWindDirection(current.getDouble("wind_deg"));
+                forecast.setProbabilityOfPrecipitation(current.getDouble("pop"));
+                JSONObject weather = current.getJSONObject("weather");
+                forecast.setWeatherDescription(weather.getString("description"));
             } catch (JSONException e) {
                 callback.onError(e);
             }
@@ -92,5 +75,35 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
     @Override
     public void GetWeekForecast(Location location, ICallback<WeekForecast> callback) {
 
+    }
+
+    @Override
+    public void GetHourlyForecast(Location location, ICallback<HourlyForecast> callback) {
+        addToRequestQueue(new JsonObjectRequest(GET, apiUrl + locationRoute(location), new JSONObject(), response -> {
+            HourlyForecast forecast = new HourlyForecast();
+            try {
+                JSONArray daysList = response.getJSONArray("daily");
+                for(int i=0;i<daysList.length();i++){
+                    JSONObject current = daysList.getJSONObject(i);
+                    HourForecast hourForecast = new HourForecast();
+                    hourForecast.setTargetTime(Instant.ofEpochSecond(current.getInt("dt")));
+                    hourForecast.setTemperature(current.getDouble("temp"));
+                    hourForecast.setFeelsLike(current.getDouble("feels_like"));
+                    hourForecast.setPressure(current.getDouble("pressure"));
+                    hourForecast.setRelativeHumidity(current.getDouble("humidity"));
+                    hourForecast.setUVIndex(current.getInt("uvi"));
+                    hourForecast.setCloudCover(current.getDouble("clouds"));
+                    hourForecast.setWindSpeed(current.getDouble("wind_speed"));
+                    hourForecast.setWindDirection(current.getDouble("wind_deg"));
+                    hourForecast.setProbabilityOfPrecipitation(current.getDouble("pop"));
+                    JSONObject weather = current.getJSONObject("weather");
+                    hourForecast.setWeatherDescription(weather.getString("description"));
+                    forecast.add(hourForecast);
+                }
+            } catch (JSONException e) {
+                callback.onError(e);
+            }
+            callback.onResponse(forecast);
+        }, callback::onError));
     }
 }

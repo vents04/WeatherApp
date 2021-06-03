@@ -14,6 +14,7 @@ public abstract class Forecast {
     protected double WindDirection;
     protected double ProbabilityForPrecipitation;
     protected double Precipitation;
+    protected String WeatherDescription;
 
     public Instant getTargetTime() {
         return targetTime;
@@ -91,7 +92,7 @@ public abstract class Forecast {
         return ProbabilityForPrecipitation;
     }
 
-    public void setProbabilityForPrecipitation(double probabilityForPrecipitation) {
+    public void setProbabilityOfPrecipitation(double probabilityForPrecipitation) {
         ProbabilityForPrecipitation = probabilityForPrecipitation;
     }
 
@@ -101,5 +102,13 @@ public abstract class Forecast {
 
     public void setPrecipitation(double precipitation) {
         Precipitation = precipitation;
+    }
+
+    public String getWeatherDescription() {
+        return WeatherDescription;
+    }
+
+    public void setWeatherDescription(String weatherDescription) {
+        WeatherDescription = weatherDescription;
     }
 }
