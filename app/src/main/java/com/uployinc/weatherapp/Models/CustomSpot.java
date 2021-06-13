@@ -1,22 +1,25 @@
 package com.uployinc.weatherapp.Models;
 
-public class CustomSpot extends Location{
-    private String userId;
+import java.util.UUID;
 
-    public CustomSpot(double latitude, double longitude, String name, String description, String userId) {
+public class CustomSpot extends Spot {
+    private UUID userId;
+
+    public CustomSpot(double latitude, double longitude, String name, String description, UUID userId) {
         super(latitude, longitude, name, description);
         this.userId = userId;
     }
 
-    public CustomSpot(double latitude, double longitude, String name, String userId) {
+    public CustomSpot(double latitude, double longitude, String name, UUID userId) {
         this(latitude, longitude, name, null, userId);
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    @Override
+    public UUID getId() {
+        return id;
     }
 }

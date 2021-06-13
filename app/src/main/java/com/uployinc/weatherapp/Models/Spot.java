@@ -48,4 +48,8 @@ public abstract class Spot implements IIndexable<UUID> {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public UUID getId() {
+        return id;
+    }
 }
