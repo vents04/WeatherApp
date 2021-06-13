@@ -27,35 +27,30 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class FragmentLocation extends Fragment {
-
-    private ArrayList<String> hours;
-    private ArrayList<Bitmap> images;
-
-    Location location;
-
-    private TextView locationTv, dateTv, temperatureTv, humidityTv, precipitationChanceTv, windSpeedTv, weatherDescriptionTv;
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initHoursList();
-        initImagesList();
-        getLocation();
-        initHoursWeatherRecyclerView(view);
+        setDateViewText(view.findViewById(R.id.date));
 
-        locationTv = view.findViewById(R.id.location);
-        dateTv = view.findViewById(R.id.date);
-        temperatureTv = view.findViewById(R.id.currentTemperatureText);
-        windSpeedTv = view.findViewById(R.id.currentWindSpeedText);
-        humidityTv = view.findViewById(R.id.currentHumidityText);
-        precipitationChanceTv = view.findViewById(R.id.currentPrecipitationChanceText);
-        weatherDescriptionTv = view.findViewById(R.id.currentWeatherDescriptionText);
+        initHourlyWeatherRecyclerView(view.findViewById(R.id.hoursWeatherRecyclerView));
 
-        setDateTvText();
-        setCurrentWeatherInformationTvs();
-        setLocationTvText();
+        App.getLocationModule().GetCurrentLocation().addOnSuccessListener((location) -> {
+            if (location != null) {
+
+                setLocationViewText(view.findViewById(R.id.location), location);
+
+                setCurrentWeatherView(view.findViewById(R.id.currentTemperatureText),
+                        view.findViewById(R.id.currentHumidityText),
+                        view.findViewById(R.id.currentPrecipitationChanceText),
+                        view.findViewById(R.id.currentWindSpeedText),
+                        view.findViewById(R.id.currentWeatherDescriptionText),
+                        location);
+            }else{
+                Log.e("error", "location was null");
+            }
+        });
     }
 
-    public void setCurrentWeatherInformationTvs(){
+    private void setCurrentWeatherView(TextView temperatureView, TextView humidityView, TextView precipitationChanceView, TextView windSpeedView, TextView weatherDescriptionView, Location location) {
         App.getWeatherApiComm().GetCurrentForecast(location, new ICallback<DayForecast>() {
             @Override
             public void onResponse(DayForecast response) {
@@ -64,11 +59,11 @@ public class FragmentLocation extends Fragment {
                 String windSpeedStr = Math.round(response.getWindSpeed() * 3.6) + " km/h";
                 String precipitationChanceStr = Math.round(response.getProbabilityForPrecipitation()) + "%";
                 String weatherDescriptionStr = response.getWeatherDescription();
-                temperatureTv.setText(temperatureStr);
-                humidityTv.setText(humidityStr);
-                precipitationChanceTv.setText(precipitationChanceStr);
-                windSpeedTv.setText(windSpeedStr);
-                weatherDescriptionTv.setText(weatherDescriptionStr);
+                temperatureView.setText(temperatureStr);
+                humidityView.setText(humidityStr);
+                precipitationChanceView.setText(precipitationChanceStr);
+                windSpeedView.setText(windSpeedStr);
+                weatherDescriptionView.setText(weatherDescriptionStr);
             }
 
             @Override
@@ -78,11 +73,11 @@ public class FragmentLocation extends Fragment {
         });
     }
 
-    public void setLocationTvText(){
+    private void setLocationViewText(TextView locationView, Location location) {
         App.getGeoCodingApiComm().GetCityByCoordinates(location, new ICallback<String>() {
             @Override
             public void onResponse(String response) {
-                locationTv.setText(response);
+                locationView.setText(response);
             }
 
             @Override
@@ -92,41 +87,26 @@ public class FragmentLocation extends Fragment {
         });
     }
 
-    public void getLocation() {
-        App.getLocationModule().GetCurrentLocation().addOnSuccessListener((location) -> {
-            if (location != null) {
-                this.location = location;
-            }else{
-                Log.e("error", "location was null");
-            }
-        });
-    }
-
-    public void setDateTvText() {
+    private void setDateViewText(TextView dateView) {
         LocalDate today = LocalDate.now();
         String formattedDate = today.getDayOfMonth() + " " + today.getMonth() + " " + today.getYear();
-        dateTv.setText(formattedDate);
+        dateView.setText(formattedDate);
     }
 
-    public void initHoursList() {
-        hours = new ArrayList<>();
-        int currentHourIn24Format = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        for (int index = currentHourIn24Format; index <= currentHourIn24Format + 24; index++) {
-            hours.add((index % 24 < 10) ? "0" + index % 24 + ":00" : index % 24 + ":00");
-        }
-    }
-
-    public void initImagesList() {
-        images = new ArrayList<>();
+    private void initHourlyWeatherRecyclerView(RecyclerView recyclerView) {
+        ArrayList<Bitmap> images = new ArrayList<>();
         Bitmap icon = BitmapFactory.decodeResource(this.getResources(), R.drawable.weather_sunny_cloudy_rainy);
         for (int index = 0; index <= 24; index++) {
             images.add(icon);
         }
-    }
 
-    private void initHoursWeatherRecyclerView(View view) {
+        ArrayList<String> hours = new ArrayList<>();
+        int currentHourIn24Format = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        for (int index = currentHourIn24Format; index <= currentHourIn24Format + 24; index++) {
+            hours.add((index % 24 < 10) ? "0" + index % 24 + ":00" : index % 24 + ":00");
+        }
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView recyclerView = view.findViewById(R.id.hoursWeatherRecyclerView);
         recyclerView.setLayoutManager(linearLayoutManager);
         HoursWeatherRecyclerViewAdapter hoursWeatherRecyclerViewAdapter = new HoursWeatherRecyclerViewAdapter(hours, images, getContext());
         recyclerView.setAdapter(hoursWeatherRecyclerViewAdapter);
