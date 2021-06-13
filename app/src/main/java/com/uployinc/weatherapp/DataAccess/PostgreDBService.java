@@ -2,7 +2,6 @@ package com.uployinc.weatherapp.DataAccess;
 
 import android.util.Pair;
 
-import com.uployinc.weatherapp.App;
 import com.uployinc.weatherapp.Common.IIndexable;
 import com.uployinc.weatherapp.Models.CustomSpot;
 
@@ -25,15 +24,15 @@ public class PostgreDBService implements IDBService{
     private final String user;
     private final String pass;
 
-    private PostgreDBService() throws SQLException, ClassNotFoundException {
-        user = App.getSQLServerUsername();
-        pass = App.getSQLServerPassword();
-        address = App.getSQLServerAddress();
+    private PostgreDBService(String username, String password, String address) throws SQLException, ClassNotFoundException {
+        this.user = username;
+        this.pass = password;
+        this.address = address;
         connection = getConnection();
     }
 
-    public PostgreDBService GetInstance() throws SQLException, ClassNotFoundException {
-        if(_instance == null) _instance = new PostgreDBService();
+    public static synchronized PostgreDBService GetInstance(String username, String password, String address) throws SQLException, ClassNotFoundException {
+        if(_instance == null) _instance = new PostgreDBService(username, password, address);
         return _instance;
     }
 
