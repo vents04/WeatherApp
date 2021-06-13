@@ -2,14 +2,13 @@ package com.uployinc.weatherapp.API;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Pair;
+import android.location.Location;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.uployinc.weatherapp.Common.ICallback;
 import com.uployinc.weatherapp.Models.DayForecast;
 import com.uployinc.weatherapp.Models.HourForecast;
 import com.uployinc.weatherapp.Models.HourlyForecast;
-import com.uployinc.weatherapp.Models.Location;
 import com.uployinc.weatherapp.Models.WeekForecast;
 
 import org.json.JSONArray;
@@ -27,8 +26,7 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
     private static VolleyWeatherApiComm instance;
     private final String somethingRoute = "/something/route";
     private String locationRoute(Location location) {
-        Pair<Double, Double> coordinates = location.getCoordinates();
-        return String.format(Locale.getDefault(),"/onecall?units=metric&lat=%f&lon=%f&appid=%s", coordinates.first, coordinates.second, apiKey);
+        return String.format(Locale.getDefault(),"/onecall?units=metric&lat=%f&lon=%f&appid=%s", location.getLatitude(), location.getLongitude(), apiKey);
     }
 
     private VolleyWeatherApiComm(Context context, String apiUrl, String apiKey) {

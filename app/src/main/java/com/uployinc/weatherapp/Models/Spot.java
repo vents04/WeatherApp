@@ -2,19 +2,25 @@ package com.uployinc.weatherapp.Models;
 
 import android.util.Pair;
 
-public abstract class Location {
-    private double latitude;
-    private double longitude;
-    private String name;
-    private String description;
+import com.uployinc.weatherapp.Common.IIndexable;
 
-    public Location(double latitude, double longitude, String name, String description) {
+import java.util.UUID;
+
+public abstract class Spot implements IIndexable<UUID> {
+    protected final UUID id;
+    protected double latitude;
+    protected double longitude;
+    protected String name;
+    protected String description;
+
+    public Spot(double latitude, double longitude, String name, String description) {
+        this.id=UUID.randomUUID();
         this.latitude = latitude;
         this.longitude = longitude;
         this.name = name;
         this.description = description;
     }
-    public Location(double latitude, double longitude, String name) {
+    public Spot(double latitude, double longitude, String name) {
         this(latitude, longitude, name, null);
     }
 

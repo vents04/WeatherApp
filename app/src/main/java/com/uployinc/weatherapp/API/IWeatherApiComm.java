@@ -1,9 +1,10 @@
 package com.uployinc.weatherapp.API;
 
+import android.location.Location;
+
 import com.uployinc.weatherapp.Common.ICallback;
 import com.uployinc.weatherapp.Models.DayForecast;
 import com.uployinc.weatherapp.Models.HourlyForecast;
-import com.uployinc.weatherapp.Models.Location;
 import com.uployinc.weatherapp.Models.WeekForecast;
 
 public interface IWeatherApiComm {

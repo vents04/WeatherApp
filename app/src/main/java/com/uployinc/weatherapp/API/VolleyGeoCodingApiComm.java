@@ -2,13 +2,16 @@ package com.uployinc.weatherapp.API;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.location.Location;
 import android.util.Pair;
 
 public class VolleyGeoCodingApiComm extends VolleyApiComm implements IGeoCodingApiComm{
     //this isn't truly a leak (sources: https://developer.android.com/training/volley/requestqueue#singleton; https://stackoverflow.com/questions/40094020/warning-do-not-place-android-context-classes-in-static-fields-this-is-a-memor)
     @SuppressLint("StaticFieldLeak")
     private static VolleyGeoCodingApiComm instance;
-    private final String somethingRoute = "/something/route";
+    private String getLocationRoute(Location location){
+        return String.format(Locale.getDefault(),"/json?latlng=%f,%f&key=%s", location.getLatitude(), location.getLongitude(), apiKey);
+    }
 
     private VolleyGeoCodingApiComm(Context context, String apiUrl, String apiKey) {
         super(context, apiUrl, apiKey);
