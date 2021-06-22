@@ -64,8 +64,9 @@
                 android:id="@+id/weatherNowIcon"
                 android:layout_width="0dp"
                 android:layout_height="175dp"
-                android:src="@drawable/weather_sunny_cloudy_rainy"
-                android:layout_weight="49"/>
+                android:src="@drawable/a01d"
+                android:layout_weight="49"
+                android:scaleType="fitCenter"/>
 
             <RelativeLayout
                 android:layout_width="10dp"
@@ -209,7 +210,7 @@
         android:layout_marginTop="30dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/hoursWeatherRecyclerView"
+        android:id="@+id/hourlyWeatherRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -225,7 +226,7 @@
         android:textAllCaps="true"
         android:textColor="#262626"
         android:textSize="16sp"
-        android:layout_below="@id/hoursWeatherRecyclerView"
+        android:layout_below="@id/hourlyWeatherRecyclerView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"/>
 

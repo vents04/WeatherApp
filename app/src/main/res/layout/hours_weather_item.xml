@@ -24,19 +24,31 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal">
 
-                <ImageView
-                    android:id="@+id/image"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/weather_sunny_cloudy_rainy"
-                    android:layout_centerInParent="true"/>
-
                 <TextView
                     android:id="@+id/hour"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/lato_bold"
                     android:text="11:00"
+                    android:textAllCaps="false"
+                    android:textColor="#262626"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/a01d"
+                    android:layout_centerInParent="true"/>
+
+
+                <TextView
+                    android:id="@+id/temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="0 °C"
                     android:textAllCaps="false"
                     android:textColor="#262626"
                     android:textSize="16sp"
