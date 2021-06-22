@@ -24,7 +24,6 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
     //this isn't truly a leak (sources: https://developer.android.com/training/volley/requestqueue#singleton; https://stackoverflow.com/questions/40094020/warning-do-not-place-android-context-classes-in-static-fields-this-is-a-memor)
     @SuppressLint("StaticFieldLeak")
     private static VolleyWeatherApiComm instance;
-    private final String somethingRoute = "/something/route";
     private String locationRoute(Location location) {
         return String.format(Locale.getDefault(),"/onecall?units=metric&lat=%f&lon=%f&appid=%s", location.getLatitude(), location.getLongitude(), apiKey);
     }
@@ -55,9 +54,15 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
                 forecast.setCloudCover(current.getDouble("clouds"));
                 forecast.setWindSpeed(current.getDouble("wind_speed"));
                 forecast.setWindDirection(current.getDouble("wind_deg"));
-                forecast.setProbabilityOfPrecipitation(current.getDouble("pop"));
-                JSONObject weather = current.getJSONObject("weather");
+                JSONArray weatherArray = current.getJSONArray("weather");
+                JSONObject weather = (JSONObject) weatherArray.get(0);
                 forecast.setWeatherDescription(weather.getString("description"));
+                forecast.setWeatherIconCode(weather.getString("icon"));
+
+                //workaround for POP
+                JSONArray hoursList = response.getJSONArray("hourly");
+                JSONObject firstHour = hoursList.getJSONObject(0);
+                forecast.setProbabilityForPrecipitation(firstHour.getDouble("pop"));
             } catch (JSONException e) {
                 callback.onError(e);
             }
@@ -80,9 +85,9 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
         addToRequestQueue(new JsonObjectRequest(GET, apiUrl + locationRoute(location), new JSONObject(), response -> {
             HourlyForecast forecast = new HourlyForecast();
             try {
-                JSONArray daysList = response.getJSONArray("daily");
-                for(int i=0;i<daysList.length();i++){
-                    JSONObject current = daysList.getJSONObject(i);
+                JSONArray hoursList = response.getJSONArray("hourly");
+                for(int i = 0; i< hoursList.length(); i++){
+                    JSONObject current = hoursList.getJSONObject(i);
                     HourForecast hourForecast = new HourForecast();
                     hourForecast.setTargetTime(Instant.ofEpochSecond(current.getInt("dt")));
                     hourForecast.setTemperature(current.getDouble("temp"));
@@ -93,9 +98,11 @@ public class VolleyWeatherApiComm extends VolleyApiComm implements IWeatherApiCo
                     hourForecast.setCloudCover(current.getDouble("clouds"));
                     hourForecast.setWindSpeed(current.getDouble("wind_speed"));
                     hourForecast.setWindDirection(current.getDouble("wind_deg"));
-                    hourForecast.setProbabilityOfPrecipitation(current.getDouble("pop"));
-                    JSONObject weather = current.getJSONObject("weather");
+                    hourForecast.setProbabilityForPrecipitation(current.getDouble("pop"));
+                    JSONArray weatherArray = current.getJSONArray("weather");
+                    JSONObject weather = (JSONObject) weatherArray.get(0);
                     hourForecast.setWeatherDescription(weather.getString("description"));
+                    hourForecast.setWeatherIconCode(weather.getString("icon"));
                     forecast.add(hourForecast);
                 }
             } catch (JSONException e) {
