@@ -2,10 +2,6 @@ package com.uployinc.weatherapp.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +18,13 @@ import java.util.ArrayList;
 public class HoursWeatherRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<String> hours;
+    private ArrayList<String> temperatures;
     private ArrayList<Bitmap> images;
     private Context context;
 
-    public HoursWeatherRecyclerViewAdapter(ArrayList<String> hours, ArrayList<Bitmap> images,  Context context) {
+    public HoursWeatherRecyclerViewAdapter(ArrayList<String> hours, ArrayList<String> temperatures, ArrayList<Bitmap> images,  Context context) {
         this.hours = hours;
+        this.temperatures = temperatures;
         this.images = images;
         this.context = context;
     }
@@ -41,6 +39,7 @@ public class HoursWeatherRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ((ViewHolder) holder).hour.setText(this.hours.get(position));
+        ((ViewHolder) holder).temperature.setText(this.temperatures.get(position));
         ((ViewHolder) holder).image.setImageBitmap(this.images.get(position));
     }
 
@@ -51,11 +50,13 @@ public class HoursWeatherRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView hour;
+        public TextView temperature;
         public ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);
             hour = itemView.findViewById(R.id.hour);
+            temperature = itemView.findViewById(R.id.temperature);
             image = itemView.findViewById(R.id.image);
         }
     }

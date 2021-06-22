@@ -15,6 +15,16 @@ public abstract class Forecast {
     protected double ProbabilityForPrecipitation;
     protected double Precipitation;
     protected String WeatherDescription;
+    protected String weatherIconCode;
+
+
+    public String getWeatherIconCode() {
+        return weatherIconCode;
+    }
+
+    public void setWeatherIconCode(String weatherIconCode) {
+        this.weatherIconCode = weatherIconCode;
+    }
 
     public Instant getTargetTime() {
         return targetTime;
@@ -92,7 +102,7 @@ public abstract class Forecast {
         return ProbabilityForPrecipitation;
     }
 
-    public void setProbabilityOfPrecipitation(double probabilityForPrecipitation) {
+    public void setProbabilityForPrecipitation(double probabilityForPrecipitation) {
         ProbabilityForPrecipitation = probabilityForPrecipitation;
     }
 
