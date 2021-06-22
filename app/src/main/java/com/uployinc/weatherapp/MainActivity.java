@@ -3,7 +3,6 @@ package com.uployinc.weatherapp;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 import com.uployinc.weatherapp.fragments.FragmentLocation;
-import com.uployinc.weatherapp.fragments.FragmentLocationDetails;
 import com.uployinc.weatherapp.fragments.FragmentLocations;
 
 import java.util.ArrayList;
@@ -35,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(new FragmentLocations());
         fragmentList.add(new FragmentLocation());
-        fragmentList.add(new FragmentLocationDetails());
 
         viewPager = findViewById(R.id.pager);
         pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), fragmentList);
@@ -58,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 System.out.println("Location permissions granted, starting location");
             } else {
-                Log.d("TUKA", "SUM");
                 this.finish();
                 System.exit(0);
             }
